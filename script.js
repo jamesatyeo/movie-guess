@@ -265,7 +265,7 @@ function gameLoss() {
 
     removeLetterSelectEventListenerAll();
 
-    guessClueDisplay.innerHTML = "Game Over."
+    guessClueDisplay.innerHTML = "Game Over"
 
     hintRevealBtn.textContent = "REVEAL"
 }
