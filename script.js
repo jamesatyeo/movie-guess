@@ -48,6 +48,12 @@ addMovie("Twelve Angry Men", "Henry Fonda", 1957, "drama");
 
 
 
+window.addEventListener("load", init);
+newBtn.addEventListener("click", init);
+hintRevealBtn.addEventListener("click", hintReveal);
+
+
+
 function init() {
 
     currentMovie = chooseMovie(movies);
@@ -60,7 +66,9 @@ function init() {
 
     hintRevealBtn.textContent = "HINT";
 
-    changeBtnColorAll('white');
+    resetBtnsStyle();
+
+    hintRevealBtn.classList.remove('disabled');
 
     removeAnswerDisplay();
 
@@ -73,10 +81,37 @@ function init() {
     attachLetterSelectEventListenerAll();
 }
 
-window.addEventListener("load", init);
-newBtn.addEventListener("click", init);
-hintRevealBtn.addEventListener("click", hintReveal);
+function letterSelect() {
 
+    let letter = this.textContent.toLowerCase();
+
+    let movieTitle = currentMovie.title.toLowerCase();
+
+    if (movieTitle.indexOf(letter) == -1) {
+        
+        guessesRemaining -= 1;
+
+        image.src = `images/${guessesRemaining}.png`;
+
+        guessesText.textContent = guessesRemaining.toString();
+
+        guessClueDisplay.innerHTML = `You have <span id="guesses">${guessesRemaining}</span> guesses remaining`;
+    }
+    else {
+        
+        revealLetters(`div[letter='${letter}']`);
+
+        updatePlayerGuess(letter)
+    }
+
+    this.classList.remove('active');
+
+    this.classList.add('disabled');
+
+    if (guessesRemaining === 0) gameLoss();
+
+    if (checkGameWon()) gameWon();
+}
 
 
 
@@ -88,11 +123,23 @@ function chooseMovie(movies) {
 }
 
 
-function changeBtnColorAll(color) {
+function resetBtnsStyle() {
 
     for (let i = 0; i < letterSelectBtns.length; i++) {
 
-        letterSelectBtns[i].style.backgroundColor = color;
+        letterSelectBtns[i].classList.remove('disabled', 'active');
+
+        letterSelectBtns[i].classList.add('active');
+    }
+}
+
+function setBtnStyleDisabledAll() {
+
+    for (let i = 0; i < letterSelectBtns.length; i++) {
+
+        letterSelectBtns[i].classList.remove('disabled', 'active');
+
+        letterSelectBtns[i].classList.add('disabled');
     }
 }
 
@@ -133,7 +180,7 @@ function createLetterDisplayElement(letter) {
     return div
 }
 
-function appendLetterDisplayElements(word, wordDisplayElement) {
+function createAndAppendLetterDisplayElements(word, wordDisplayElement) {
 
     for (let i = 0; i < word.length; i++) {
 
@@ -143,7 +190,7 @@ function appendLetterDisplayElements(word, wordDisplayElement) {
     }
 }
 
-function appendEmptyLetterDisplayElement() {
+function createAndAppendEmptyLetterDisplayElement() {
 
     let wordDisplayElement = createWordDisplayElement();
 
@@ -166,9 +213,9 @@ function createEmptyAnswerDisplay(currentMovie) {
 
         let word = titleArray[i];
 
-        appendLetterDisplayElements(word, wordDisplayElement);
+        createAndAppendLetterDisplayElements(word, wordDisplayElement);
 
-        appendEmptyLetterDisplayElement();
+        createAndAppendEmptyLetterDisplayElement();
     }
 
     wordContainer.removeChild(wordContainer.lastChild);
@@ -194,37 +241,6 @@ function resetPlayerGuess(currentMovie) {
     }
 
     return currentPlayerGuess;
-}
-
-
-function letterSelect() {
-
-    let letter = this.textContent.toLowerCase();
-
-    let movieTitle = currentMovie.title.toLowerCase();
-
-    if (movieTitle.indexOf(letter) == -1) {
-        
-        guessesRemaining -= 1;
-
-        image.src = `images/${guessesRemaining}.png`;
-
-        guessesText.textContent = guessesRemaining.toString();
-
-        guessClueDisplay.innerHTML = `You have <span id="guesses">${guessesRemaining}</span> guesses remaining`;
-    }
-    else {
-        
-        revealLetters(`div[letter='${letter}']`);
-
-        updatePlayerGuess(letter)
-    }
-
-    this.style.backgroundColor = 'grey';
-
-    if (guessesRemaining === 0) gameLoss();
-
-    if (checkGameWon()) gameWon();
 }
 
 
@@ -261,7 +277,7 @@ function updatePlayerGuess(letter) {
 
 function gameLoss() {
 
-    changeBtnColorAll('grey');
+    setBtnStyleDisabledAll();
 
     removeLetterSelectEventListenerAll();
 
@@ -282,7 +298,9 @@ function checkGameWon() {
 
 function gameWon() {
 
-    changeBtnColorAll('grey');
+    setBtnStyleDisabledAll();
+
+    hintRevealBtn.classList.add('disabled');
 
     removeLetterSelectEventListenerAll();
 
@@ -301,6 +319,8 @@ function hintReveal() {
     else if (hintRevealBtn.textContent === "REVEAL") {
 
         revealLetters(".letter-display");
+
+        hintRevealBtn.classList.add('disabled');
     }
 }
 
@@ -324,6 +344,4 @@ document.addEventListener('keydown', function(e) {
     let target = document.querySelector(`.letter-select.${letter}`);
 
     if (target) target.click();
-})
-
-
+});
