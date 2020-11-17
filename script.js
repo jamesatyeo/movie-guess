@@ -1,6 +1,5 @@
 "use strict"
 
-let movies = [];
 let currentMovie;
 let guessesRemaining;
 let playerGuess;
@@ -18,35 +17,6 @@ let hintRevealBtn = document.getElementById("hint-reveal");
 const once = {
     once: true
 };
-
-
-function Movie(title, star, year, genre) {
-
-    this.title = title;
-    this.star = star;
-    this.genre = genre;
-
-    this.clue = `This ${year} ${genre} movie starred ${star}.`;
-}
-
-function addMovie(title, star, year, genre) {
-
-    let movie = new Movie(title, star, year, genre);
-
-    movies.push(movie);
-}
-
-addMovie("The Shawshank Redemption", "Tim Robbins", 1994, "drama");
-
-addMovie("The Godfather", "Marlon Brando", 1972, "crime");
-
-addMovie("Twelve Angry Men", "Henry Fonda", 1957, "drama");
-
-
-
-
-
-
 
 window.addEventListener("load", init);
 newBtn.addEventListener("click", init);
